@@ -49,7 +49,10 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="MainMonad.fs" />
+    <Compile Include="InHelpers.fs" />
+    <Compile Include="In.fs" />
     <Compile Include="One.fs" />
+    <Compile Include="StringAnalysis.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>

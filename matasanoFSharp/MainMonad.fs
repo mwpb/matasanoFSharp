@@ -1,4 +1,4 @@
-﻿module MainMonad
+﻿module MM
 
 open System
 open System.Diagnostics
@@ -11,14 +11,29 @@ type ErrorBuilder() =
     member t.Bind(x:Error<'a>,f:'a -> Error<'b>) =
         match x with
         | OK a -> f(a)
-        | Error errorMessage -> Debug.WriteLine errorMessage; Error errorMessage
+        | Error errorMessage -> Error errorMessage
 
     member t.Return(x:'a) = OK x
     member t.ReturnFrom(x:Error<'a>) = x
 
 let er = ErrorBuilder()
 
-let check (condition:bool) (message:string) = 
+let check (condition:bool) (message:string) :Error<unit> = 
     match condition with
-    | true -> Debug.WriteLine "true"; OK ()
-    | false -> Debug.WriteLine "false"; Error message
+    | true -> OK ()
+    | false -> Error message
+
+let printError (output:Error<'a>) =
+    match output with
+    | OK a -> Console.WriteLine (sprintf "%A" a)
+    | Error s -> Console.WriteLine s
+
+let rec arrayOfErrorsToErrorArray (arrayOfErrors:Error<'a> []) :Error<'a []>= 
+    er {
+        match arrayOfErrors with 
+        | [||] -> return [||]
+        | _ -> 
+            let! head = arrayOfErrors.[0]
+            let! recursion = arrayOfErrorsToErrorArray (arrayOfErrors.[1..])
+            return Array.concat [[|head|];recursion]
+    }
