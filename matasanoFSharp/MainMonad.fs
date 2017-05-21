@@ -37,3 +37,12 @@ let rec arrayOfErrorsToErrorArray (arrayOfErrors:Error<'a> []) :Error<'a []>=
             let! recursion = arrayOfErrorsToErrorArray (arrayOfErrors.[1..])
             return Array.concat [[|head|];recursion]
     }
+
+type Category =
+    | OKCaty
+    | ErrorCaty
+
+let categorise (error:Error<'a>) =
+    match error with
+    | OK _ -> OKCaty
+    | Error _ -> ErrorCaty

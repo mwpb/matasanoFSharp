@@ -2,6 +2,7 @@
 // See the 'F# Tutorial' project for more help.
 
 open System
+open System.Diagnostics
 open MM
 open One
 
@@ -11,6 +12,7 @@ open One
 [<EntryPoint>]
 let main argv = 
 //    StringAnalysis.testSingleXOR
-    IN.tests()
+    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
+
     Console.ReadLine() |> ignore
     0 // return an integer exit code
