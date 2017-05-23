@@ -94,6 +94,7 @@ let testAsciiToByteSuccess() =
         'Y', 0b01011001uy 
         'Z', 0b01011010uy 
         '[', 0b01011011uy
+        '\\', 0b01011100uy
         ']', 0b01011101uy
         '^', 0b01011110uy
         '_', 0b01011111uy
@@ -136,9 +137,32 @@ let testAsciiToByteFailure() =
         '§'
         '£'
     |] |> Array.iter (fun c -> (asciiToByte c) |> categorise |> (should equal) ErrorCaty)
-//    Console.WriteLine "hexPaiToByte"
-//    [|('f','2');('g','z');('§','0');('a','a')|] |> Array.iter (fun (c1,c2) -> MM.printError (hexPairToByte c1 c2))
-//    Console.WriteLine "base64QuadrupleToByteTriple"
+[<Test>]
+let testHexPairToByteSuccess() = 
+    [|
+        '0','0',0b0000uy
+        '0','1',0b0001uy
+        '0','2',0b0010uy
+        '0','3',0b0011uy
+        '0','4',0b0100uy
+        '0','5',0b0101uy
+        '0','6',0b0110uy
+        '0','7',0b0111uy
+        '0','8',0b1000uy
+        '0','9',0b1001uy
+        '0','A',0b1010uy
+        '0','B',0b1011uy
+        '0','C',0b1100uy
+        '0','D',0b1101uy
+        '0','E',0b1110uy
+        '0','F',0b1111uy
+    |] |> Array.iter (fun (x,y,z) -> hexPairToByte x y |> should equal (OK z))
+[<Test>]
+let testHexPairToByteFailure() = 
+    [|
+        'z','0',0b0000uy
+    |] |> Array.iter (fun (x,y,z) -> hexPairToByte x y |> categorise |> should equal ErrorCaty)
+ //    Console.WriteLine "base64QuadrupleToByteTriple"
 //    [|
 //        ('f','2','a','0')
 //        ('f','§',' ','0')
