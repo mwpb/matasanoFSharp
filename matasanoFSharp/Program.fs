@@ -12,7 +12,8 @@ open One
 [<EntryPoint>]
 let main argv = 
 //    StringAnalysis.testSingleXOR
-    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
-
+//    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
+    let out = StringConverters.hexStringToCharString "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
+    MM.printError out
     Console.ReadLine() |> ignore
     0 // return an integer exit code
