@@ -57,7 +57,8 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="InTest.fs" />
     <Compile Include="OutTest.fs" />
-    <Compile Include="StringConvertersTest.fs" />
+    <Compile Include="S1Q1Test.fs" />
+    <Compile Include="S1Q2Test.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />

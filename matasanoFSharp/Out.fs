@@ -22,3 +22,24 @@ let byteTripleToBase64Quadruple (b1:byte) (b2:byte) (b3:byte) :Error<char*char*c
         let charArray = System.Convert.ToBase64String([|b1;b2;b3|])
         return charArray.[0],charArray.[1],charArray.[2],charArray.[3]
     }
+
+let rec flatten2 (array:('a*'a)[]) =
+    match array with
+    | [||] -> [||]
+    | _ -> 
+        let a, b = array.[0]
+        Array.concat [[|a;b|];flatten2 array.[1..]]
+
+let rec flatten3 (array:('a*'a*'a)[]) =
+    match array with
+    | [||] -> [||]
+    | _ -> 
+        let a, b, c = array.[0]
+        Array.concat [[|a;b;c|];flatten3 array.[1..]]
+
+let rec flatten4 (array:('a*'a*'a*'a)[]) =
+    match array with
+    | [||] -> [||]
+    | _ -> 
+        let a, b, c, d = array.[0]
+        Array.concat [[|a;b;c;d|];flatten4 array.[1..]]

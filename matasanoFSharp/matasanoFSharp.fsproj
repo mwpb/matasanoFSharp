@@ -61,11 +61,13 @@
     <Compile Include="Checks.fs" />
     <Compile Include="Out.fs" />
     <Compile Include="In.fs" />
-    <Compile Include="Split.fs" />
-    <Compile Include="StringConverters.fs" />
+    <Compile Include="INString.fs" />
+    <Compile Include="OUTString.fs" />
+    <Compile Include="ByteOps.fs" />
     <Compile Include="One.fs" />
     <Compile Include="StringAnalysis.fs" />
     <Compile Include="S1Q1.fs" />
+    <Compile Include="S1Q2.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
