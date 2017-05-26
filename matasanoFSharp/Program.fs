@@ -13,9 +13,8 @@ open One
 let main argv = 
 //    StringAnalysis.testSingleXOR
 //    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
-    let out = 
-        "1c0111001f010100061a024b53535009181c"
-        |> S1Q1.hexStringToCharString
-    MM.printError (out)
+    let out = Constants.unicodeChars
+    for x in out do Console.Write (sprintf "%A" x)
+    //MM.printError (out)
     Console.ReadLine() |> ignore
     0 // return an integer exit code 

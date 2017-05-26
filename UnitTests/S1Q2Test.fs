@@ -4,12 +4,12 @@ open NUnit.Framework
 open FsUnit
 
 [<Test>]
-let hexStringXORTests() =
+let S1Q2Tests() =
     ("1c0111001f010100061a024b53535009181c","686974207468652062756c6c277320657965")
         ||> S1Q2.hexStringXOR
         |> should equal (OK ("746865206b696420646f6e277420706c6179".ToUpper()))
 [<Test>]
-let XOREasterEgg() =
+let S1Q2EasterEgg() =
     [|
         "686974207468652062756c6c277320657965"
         "746865206b696420646f6e277420706c6179"

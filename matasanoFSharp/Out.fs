@@ -12,8 +12,8 @@ let byteToHexPair (b:byte) :Error<char*char> =
     er {
         let h = System.BitConverter.ToString([|b|]).Replace("-","")
         let a,b = h.[0], h.[1]
-        do! check (Checks.isHexChar a) (sprintf "char (%c) is not hex char" a)
-        do! check (Checks.isHexChar b) (sprintf "char (%c) is not hex char" b)
+        do! check (Constants.isHexChar a) (sprintf "char (%c) is not hex char" a)
+        do! check (Constants.isHexChar b) (sprintf "char (%c) is not hex char" b)
         return (a,b)
     }
 

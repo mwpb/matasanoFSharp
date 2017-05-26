@@ -1,7 +1,7 @@
-﻿module StringAnalysis
+﻿module Freqs
 
 open MM
-open One
+open System
 
 let expectedFrequencies =
     [|
@@ -39,19 +39,20 @@ let expectedChars = expectedFrequencies |> Array.map (fun(x,y) -> (x,0))
 let sumOfSquaresDifference (freq1:(char*float)[]) (freq2:(char*float)[]) =
     Array.fold2 (fun (acc:float) (a,b) (x,y) -> (float acc) + (b-y)*(b-y)) 0.0 freq1 freq2
 
-let addOccurrence (acc:(char*int) []) (c:char) =
+let addOccurrence (acc:(char*int) []) (character:char) =
+    let c = Char.ToLower character
     let index = Array.tryFindIndex (fun (x,y) -> x=c) acc
     acc |> Array.map (fun (ch,m) -> if (c=ch) then (ch,m+1) else (ch,m))
 
 let getCharOccurrencesFromCharArray (input:char []) = 
     Array.fold addOccurrence expectedChars input
 
-let getCharFrequencyFromString (input:string) = 
+let getCharFrequencyFromString (input:char []) = 
     let length = input.Length
-    let occurrences = getCharOccurrencesFromCharArray (input.ToCharArray())
+    let occurrences = getCharOccurrencesFromCharArray (input)
     occurrences |> Array.map (fun (x,y) -> (x,(float y)/(float length)))
 
-let stringScore (input:string) =
+let stringScore (input:char []) =
     let inputFrequencies = getCharFrequencyFromString input
     sumOfSquaresDifference inputFrequencies expectedFrequencies
 
