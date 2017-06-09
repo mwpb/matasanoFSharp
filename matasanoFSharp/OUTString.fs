@@ -1,6 +1,7 @@
 ﻿module OUTString
 open MM
 open System
+open System.Diagnostics
 
 let byteArrayToHexString (byteArray:byte []) :Error<string> =
     er {
@@ -25,3 +26,5 @@ let byteArrayToCharString (byteArray:byte []) :Error<string> =
         let! (charArray:char []) = charErrorArray |> MM.arrayOfErrorsToErrorArray 
         return String.Join("",charArray)
     }
+
+let printBA (ba:byte []) = Debug.WriteLine (sprintf "%A" (ba |> byteArrayToCharString))

@@ -36,3 +36,8 @@ let S1Q2EasterEgg() =
 let s1q3test() =
     QS.s1q3 "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
     |> should equal (OK "Cooking MC's like a pound of bacon")
+
+[<Test>]
+let s1q4test() =
+    QS.s1q4()
+    |> should equal (OK "Now that the party is jumping\n")

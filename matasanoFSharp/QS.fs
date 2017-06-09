@@ -92,7 +92,7 @@ let s1q3inner (ba:byte []) (current:Error<byte []>)  (b:byte) :Error<byte []>=
 
 let s1q3bytes (ba:byte []) =
     er {
-        let! alphabetBytes = Constants.base64Chars |> Array.map IN.charToByte |> MM.arrayOfErrorsToErrorArray
+        let alphabetBytes = Constants.unicodeCharsAsBytes
         let! mostLikely = alphabetBytes |> Array.fold (s1q3inner ba) (OK [||])
         return mostLikely
     }
@@ -121,13 +121,13 @@ let s1q4inner (current:Error<byte []>) (ba:byte []) :Error<byte []>=
     er {
         let! curr = current
         let! mostLikely = s1q3bytes ba
-        return! Freqs.moreLikely mostLikely curr
+        let! out = (Freqs.moreLikely mostLikely curr)
+        return out
     }
 
 let s1q4() :Error<string> =
     er {
-        let input = FileUtils.fileToStringArray ((__SOURCE_DIRECTORY__)+"/4.txt")
-        let hexStrings = input.[0..5]
+        let hexStrings = FileUtils.fileToStringArray ((__SOURCE_DIRECTORY__)+"/4.txt")
         let! bytes = hexStrings |> Array.map INString.hexStringToByteArray |> MM.arrayOfErrorsToErrorArray
         let! mostLikely = bytes |> Array.fold (s1q4inner) (OK [||])
         let! outChars = mostLikely |> Array.map OUT.byteToChar |> MM.arrayOfErrorsToErrorArray

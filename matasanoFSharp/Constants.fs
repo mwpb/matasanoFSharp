@@ -9,6 +9,7 @@ let upperCaseChars = [|'A'..'Z'|]
 let hexChars = Array.concat [numeralChars;lowerHexes;upperHexes]
 let base64Chars = Array.concat [lowerCaseChars;upperCaseChars;[|'+'|];[|'/'|]]
 let unicodeChars = [|for i in 0..255 do yield System.Convert.ToChar(byte i)|]
+let unicodeCharsAsBytes = [|for i in 0..255 do yield byte i|]
 
 let constantBytes (len:int) (b:byte) = [|for i in 1..len do yield b|]
 
