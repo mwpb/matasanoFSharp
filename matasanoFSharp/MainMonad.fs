@@ -34,7 +34,8 @@ let rec arrayOfErrorsToErrorArray (arrayOfErrors:Error<'a> []) :Error<'a []>=
         | [||] -> return [||]
         | _ -> 
             let! head = arrayOfErrors.[0]
-            let! recursion = arrayOfErrorsToErrorArray (arrayOfErrors.[1..])
+            let tail = arrayOfErrors.[1..]
+            let! recursion = arrayOfErrorsToErrorArray tail
             return Array.concat [[|head|];recursion]
     }
 

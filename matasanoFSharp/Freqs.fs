@@ -2,6 +2,7 @@
 
 open MM
 open System
+open System.Diagnostics
 
 let expectedFrequencies =
     [|
@@ -34,8 +35,6 @@ let expectedFrequencies =
         ' ',19.18182
     |] |> Array.map (fun (x,y) -> (x,y/100.0))
 
-let expectedChars = expectedFrequencies |> Array.map (fun(x,y) -> (x,0))
-
 let sumOfSquaresDifference (freq1:(char*float)[]) (freq2:(char*float)[]) =
     Array.fold2 (fun (acc:float) (a,b) (x,y) -> (float acc) + (b-y)*(b-y)) 0.0 freq1 freq2
 
@@ -45,16 +44,40 @@ let addOccurrence (acc:(char*int) []) (character:char) =
     acc |> Array.map (fun (ch,m) -> if (c=ch) then (ch,m+1) else (ch,m))
 
 let getCharOccurrencesFromCharArray (input:char []) = 
-    Array.fold addOccurrence expectedChars input
+    Array.fold addOccurrence (expectedFrequencies |> Array.map (fun(x,y) -> (x,0))) input
 
-let getCharFrequencyFromString (input:char []) = 
-    let length = input.Length
-    let occurrences = getCharOccurrencesFromCharArray (input)
-    occurrences |> Array.map (fun (x,y) -> (x,(float y)/(float length)))
+let getCharFrequencyFromString (inputBA:byte []) = 
+    er {
+        let! input = inputBA |> Array.map OUT.byteToChar |> MM.arrayOfErrorsToErrorArray
+        let length = input.Length
+        let occurrences = getCharOccurrencesFromCharArray (input)
+        return occurrences |> Array.map (fun (x,y) -> (x,(float y)/(float length)))
+    }
+    
+let stringScore (input:byte []) =
+    er{
+        let! inputFrequencies = getCharFrequencyFromString input
+        return sumOfSquaresDifference inputFrequencies expectedFrequencies
+    }
 
-let stringScore (input:char []) =
-    let inputFrequencies = getCharFrequencyFromString input
-    sumOfSquaresDifference inputFrequencies expectedFrequencies
+let moreLikely (ba1:byte []) (ba2:byte []) =
+    er {
+        let! score1 = stringScore ba1
+        let! score2 = stringScore ba2
+//        Debug.WriteLine (sprintf "score1: %A, score2: %A" score1 score2)
+        let out = 
+            match score1 > score2 with
+            | true -> ba2
+            | false -> ba1
+        return out 
+    }
+
+//let mostLikelyString (inputs:(char [])[]) =
+//    er {
+//        let addScores = inputs |> Array.map (fun x -> (stringScore x,x))
+//        let mostLikely = addScores |> Array.maxBy (fun (f,ch) -> 1.0-f)
+//        return mostLikely |> snd
+//    }
 
 //let tests =
 //    [|

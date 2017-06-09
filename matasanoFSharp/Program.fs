@@ -13,8 +13,8 @@ open One
 let main argv = 
 //    StringAnalysis.testSingleXOR
 //    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
-    let out = Constants.unicodeChars
-    for x in out do Console.Write (sprintf "%A" x)
-    //MM.printError (out)
+    let out = QS.s1q4()
+//    for x in out do Console.Write (sprintf "%A" x)
+    MM.printError (out)
     Console.ReadLine() |> ignore
     0 // return an integer exit code 

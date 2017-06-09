@@ -63,15 +63,15 @@
     <Compile Include="In.fs" />
     <Compile Include="INString.fs" />
     <Compile Include="OUTString.fs" />
+    <Compile Include="FileUtils.fs" />
     <Compile Include="ByteOps.fs" />
     <Compile Include="Freqs.fs" />
     <Compile Include="One.fs" />
-    <Compile Include="S1Q1.fs" />
-    <Compile Include="S1Q2.fs" />
-    <Compile Include="S1Q3.fs" />
+    <Compile Include="QS.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <Content Include="4.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
