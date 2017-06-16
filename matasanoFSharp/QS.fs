@@ -59,8 +59,7 @@ let s1q2 (h1:string) (h2:string) :Error<string>=
     er {
         let! bytes1 = INString.hexStringToByteArray h1
         let! bytes2 = INString.hexStringToByteArray h2
-        let xorByteErrors = (bytes1,bytes2) ||> Array.map2 ByteOps.byteXOR
-        let xorBytes = xorByteErrors
+        let xorBytes = (bytes1,bytes2) ||> Array.map2 ByteOps.byteXOR
         return! xorBytes |> OUTString.byteArrayToHexString
     }
 
@@ -130,6 +129,38 @@ let s1q4() :Error<string> =
         let hexStrings = FileUtils.fileToStringArray ((__SOURCE_DIRECTORY__)+"/4.txt")
         let! bytes = hexStrings |> Array.map INString.hexStringToByteArray |> MM.arrayOfErrorsToErrorArray
         let! mostLikely = bytes |> Array.fold (s1q4inner) (OK [||])
-        let! outChars = mostLikely |> Array.map OUT.byteToChar |> MM.arrayOfErrorsToErrorArray
-        return String.Join("", outChars)
+        let! out = mostLikely |> OUTString.byteArrayToCharString 
+        return out
+    }
+
+(*
+
+Implement repeating-key XOR
+
+Here is the opening stanza of an important work of the English language:
+
+Burning 'em, if you ain't quick and nimble
+I go crazy when I hear a cymbal
+
+Encrypt it, under the key "ICE", using repeating-key XOR.
+
+In repeating-key XOR, you'll sequentially apply each byte of the key; the first byte of plaintext will be XOR'd against I, the next C, the next E, then I again for the 4th byte, and so on.
+
+It should come out to:
+
+0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272
+a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f
+
+Encrypt a bunch of stuff using your repeating-key XOR function. Encrypt your mail. Encrypt your password file. Your .sig file. Get a feel for it. I promise, we aren't wasting your time with this.
+
+*)
+
+let s1q5 (inString:string) :Error<string> =
+    er {
+        let! bytes = inString |> INString.charStringToByteArray
+        let! keyBytes = "ICE" |> INString.charStringToByteArray
+        Debug.WriteLine (sprintf "%A" keyBytes)
+        let outBytes = bytes |> ByteOps.keyXOR keyBytes
+        let! chars = outBytes |> OUTString.byteArrayToHexString
+        return chars
     }
