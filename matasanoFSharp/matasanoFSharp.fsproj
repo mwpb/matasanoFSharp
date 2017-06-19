@@ -61,7 +61,6 @@
     <Compile Include="Constants.fs" />
     <Compile Include="Out.fs" />
     <Compile Include="In.fs" />
-    <Compile Include="INString.fs" />
     <Compile Include="OUTString.fs" />
     <Compile Include="FileUtils.fs" />
     <Compile Include="ByteOps.fs" />
@@ -72,10 +71,15 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <Content Include="4.txt" />
+    <Content Include="6.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.3.1.2.5\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharpx.Collections">
+      <HintPath>..\packages\FSharpx.Collections.1.16.0\lib\net40\FSharpx.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />

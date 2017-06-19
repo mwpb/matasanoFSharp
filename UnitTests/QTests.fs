@@ -1,4 +1,7 @@
 ﻿module QTests
+
+open System
+open System.Diagnostics
 open FsUnit
 open NUnit.Framework
 open MM
@@ -41,3 +44,13 @@ let s1q3test() =
 let s1q4test() =
     QS.s1q4()
     |> should equal (OK "Now that the party is jumping\n")
+
+[<Test>]
+let s1q5test() =
+    QS.s1q5 "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+    |> should equal (OK "0B3637272A2B2E63622C2E69692A23693A2A3C6324202D623D63343C2A26226324272765272A282B2F20430A652E2C652A3124333A653E2B2027630C692B20283165286326302E27282F")
+
+[<Test>]
+let s1q6part1test() =
+    ByteOps.stringEditDistance "this is a test" "wokka wokka!!!"
+    |> should equal (OK 37)

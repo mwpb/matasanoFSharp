@@ -13,8 +13,7 @@ open One
 let main argv = 
 //    StringAnalysis.testSingleXOR
 //    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
-    let q5In = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
-    let out = QS.s1q5 q5In
+    let out = QS.s1q6()
 //    for x in out do Console.Write (sprintf "%A" x)
     MM.printError (out)
     Console.ReadLine() |> ignore

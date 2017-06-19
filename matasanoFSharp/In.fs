@@ -4,45 +4,30 @@ open System.Diagnostics
 open System.Collections
 open MM
 
-let charToByte (c:char) :Error<byte>= 
-    try
-        OK (System.Convert.ToByte(c))
-    with 
-    | _ -> Error (sprintf "Cannot convert char (%c) to a byte" c)
-    
-let hexPairToByte (c1:char) (c2:char) :Error<byte>=
-    try
-        OK (System.Convert.ToByte(string(c1)+string(c2),16))
-    with
-    | _ -> Error (sprintf "Cannot convert pair (%c,%c) to byte" c1 c2)
+let charToByte (c:char) = System.Convert.ToByte(c)
 
-let base64QuadrupleToByteTriple (c1:char) (c2:char) (c3:char) (c4:char) :Error<byte*byte*byte>=
+let hexPairToByte (c1:char) (c2:char) =
+    System.Convert.ToByte(string(c1)+string(c2),16)
+
+let base64QuadrupleToBytes (c1:char) (c2:char) (c3:char) (c4:char) =
     let byteArray = System.Convert.FromBase64CharArray([|c1;c2;c3;c4|],0,4)
-    OK (byteArray.[0],byteArray.[1],byteArray.[2])
+    seq [byteArray.[0];byteArray.[1];byteArray.[2]]
 
-let rec split2 (array:'a []) :Error<('a*'a)[]>=
-    er {
-        if array.Length = 0 then return [||]
-        elif (array.Length < 2) then return! Error (sprintf "Length not divisble by 2: %A" array)
-        else
-            let! recursion = split2 array.[2..] 
-            return Array.concat([[|(array.[0],array.[1])|];recursion])
-    }
+let rec hexesToBytes (acc:byte seq) (hexes:char seq) =
+    match hexes with
+    | Nil -> acc
+    | Cons(a,Nil) -> failwith "Hex LL must be of even length."
+    | Cons(a,Cons(b,tail)) -> hexesToBytes (seq {yield hexPairToByte a b; yield! acc}) tail
 
-let rec split3 (array:'a []) :Error<('a*'a*'a)[]>=
-    er {
-        if array.Length = 0 then return [||]
-        elif (array.Length < 2) then return! Error (sprintf "Length not divisble by 3: %A" array)
-        else
-            let! recursion = split3 array.[3..] 
-            return Array.concat([[|(array.[0],array.[1],array.[2])|];recursion])
-    }
+let rec base64sToBytes (acc: byte seq) (base64s:char seq) =
+    match base64s with
+    | Nil -> acc
+    | Cons(a,Nil) -> failwith "Base64 LL must have length that is a multiple of four."
+    | Cons(a,Cons(b,Nil)) -> failwith "Base64 LL must have length that is a multiple of four."
+    | Cons(a,Cons(b,Cons(c,Nil))) -> failwith "Base64 LL must have length that is a multiple of four."
+    | Cons(a,Cons(b,Cons(c,Cons(d,tail)))) -> base64sToBytes (seq {yield! base64QuadrupleToBytes a b c d; yield! acc}) tail
 
-let rec split4 (array:'a []) :Error<('a*'a*'a*'a)[]>=
-    er {
-        if array.Length = 0 then return [||]
-        elif (array.Length < 2) then return! Error (sprintf "Length not divisble by 3: %A" array)
-        else
-            let! recursion = split4 array.[4..] 
-            return Array.concat([[|(array.[0],array.[1],array.[2],array.[3])|];recursion])
-    }
+let rec charsToBytes (acc:byte seq) (chars:char seq) =
+    match chars with
+    | Nil -> acc
+    | Cons(a,tail) -> charsToBytes (seq {yield charToByte a; yield! acc}) tail
