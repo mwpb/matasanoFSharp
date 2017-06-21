@@ -50,7 +50,7 @@ let s1q5test() =
     QS.s1q5 "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
     |> should equal "0B3637272A2B2E63622C2E69692A23693A2A3C6324202D623D63343C2A26226324272765272A282B2F20430A652E2C652A3124333A653E2B2027630C692B20283165286326302E27282F"
 
-//[<Test>]
-//let s1q6part1test() =
-//    ByteOps.stringEditDistance "this is a test" "wokka wokka!!!"
-//    |> should equal (OK 37)
+[<Test>]
+let s1q6part1test() =
+    QS.s1q6part1 "this is a test" "wokka wokka!!!"
+    |> should equal 37

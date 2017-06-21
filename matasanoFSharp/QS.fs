@@ -178,19 +178,4 @@ We get more tech support questions for this challenge than any of the other ones
 
 *)
 
-//let s1q6inner() =
-//    er {
-//        
-//        return()
-//    }
-//
-//let s1q6() =
-//    er {
-//        let first216Chars = FileUtils.firstCharsOfFile 216 (new System.IO.StreamReader((__SOURCE_DIRECTORY__)+"/4.txt"))
-//        let base64String = first216Chars |> String.Concat
-//        let! bytes = base64String |> INString.base64StringToByteArray
-//        let bytes160 = bytes.[0..159]
-//        let editDistances = [|2..40|] |> Array.map (ByteOps.keyLengthToEditDistance bytes)
-//        let keySize = editDistances |> Array.mapi (fun i x -> (i+2,x)) |> Array.minBy snd |> fst
-//        return keySize
-//    }
+let s1q6part1 (input1:string) (input2:string) = ByteOps.bytesEditDistance (input1|>Seq.toArray|>IN.charsToBytes) (input2|>Seq.toArray|>IN.charsToBytes)

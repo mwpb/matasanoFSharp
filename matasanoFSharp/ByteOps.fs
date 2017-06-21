@@ -73,22 +73,22 @@ let byteEditDistance (b1:byte) (b2:byte) :int=
     let xor = (byteXOR b1 b2).[0]
     byteToCount xor    
 
-//let byteArrayEditDistance (ba1:byte []) (ba2:byte []) :int=
-//    let xors = (ba1,ba2) ||> byteArrayXOR
-//    xors |> Array.fold (fun acc x -> acc+(byteToCount x)) 0
-//
-//let keyLengthToEditDistance (input:byte []) (keyLength:int) :float=
-//    let one = input.[0..(keyLength-1)]
-//    let two = input.[keyLength..2*keyLength-1]
-//    let three = input.[2*keyLength..3*keyLength-1]
-//    let four = input.[3*keyLength..4*keyLength-1]
-//    let dist1 = byteArrayEditDistance one two |> float
-//    let dist2 = byteArrayEditDistance three four |> float
-//    (dist1 + dist2)/(2.0*(keyLength |> float))
-//
-//let stringEditDistance (s1:string) (s2:string) :Error<int>=
-//    er {
-//        let! ba1 = s1 |> INString.charStringToByteArray
-//        let! ba2 = s2 |> INString.charStringToByteArray
-//        return byteArrayEditDistance (ba1:byte []) (ba2:byte [])
-//    }
+let byteArrayEditDistance (ba1:byte []) (ba2:byte []) :int=
+    let xors = (ba1,ba2) ||> bytesXOR
+    xors |> Array.fold (fun acc x -> acc+(byteToCount x)) 0
+
+let rec bytesEditDistanceInner (acc:int) (bytes1:byte []) (bytes2:byte []) =
+    match bytes1, bytes2 with
+    | Nil, Nil -> acc
+    | Nil, _ | _, Nil -> failwith "Byte arrays should have the same length."
+    | Cons(a,taila), Cons(b,tailb) -> bytesEditDistanceInner ((byteEditDistance a b)+acc) taila tailb
+let bytesEditDistance bytes1 bytes2 = bytesEditDistanceInner 0 bytes1 bytes2
+
+let keyLengthToEditDistance (input:byte []) (keyLength:int) :float=
+    let one = input.[0..(keyLength-1)]
+    let two = input.[keyLength..2*keyLength-1]
+    let three = input.[2*keyLength..3*keyLength-1]
+    let four = input.[3*keyLength..4*keyLength-1]
+    let dist1 = byteArrayEditDistance one two |> float
+    let dist2 = byteArrayEditDistance three four |> float
+    (dist1 + dist2)/(2.0*(keyLength |> float))
