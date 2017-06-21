@@ -1,6 +1,6 @@
 ﻿module QS
 
-open MM
+open AU
 open System
 open System.Diagnostics
 
@@ -23,17 +23,9 @@ Always operate on raw bytes, never on encoded strings. Only use hex and base64 f
 
 *)
 
-let s1q1 (hexString:string) :Error<string>=
-    er {
-        let! byteArray = INString.hexStringToByteArray hexString
-        return! byteArray |> OUTString.byteArrayToBase64String
-    }
+let s1q1 (hexString:string) = hexString |> Seq.toArray |> IN.hexesToBytes |> OUT.bytesToBase64s |> String.Concat
 
-let s1q1ee (hexString:string) :Error<string>=
-    er {
-        let! byteArray = INString.hexStringToByteArray hexString
-        return! byteArray |> OUTString.byteArrayToCharString
-    }
+let s1q1ee (hexString:string) = hexString |> Seq.toArray |> IN.hexesToBytes |> OUT.bytesToChars |> String.Concat
 
 (*
 
@@ -55,13 +47,7 @@ If your function works properly, then when you feed it the string:
 
 *)
 
-let s1q2 (h1:string) (h2:string) :Error<string>=
-    er {
-        let! bytes1 = INString.hexStringToByteArray h1
-        let! bytes2 = INString.hexStringToByteArray h2
-        let xorBytes = (bytes1,bytes2) ||> Array.map2 ByteOps.byteXOR
-        return! xorBytes |> OUTString.byteArrayToHexString
-    }
+let s1q2 (h1:string) (h2:string) = ByteOps.bytesXOR (h1 |> Seq.toArray |> IN.hexesToBytes) (h2 |> Seq.toArray |> IN.hexesToBytes) |> OUT.bytesToHexes
 
 (*
 
@@ -82,27 +68,19 @@ You now have our permission to make "ETAOIN SHRDLU" jokes on Twitter.
 
 *)
 
-let s1q3inner (ba:byte []) (current:Error<byte []>)  (b:byte) :Error<byte []>=
-    er {
-        let! curr = current
-        let xor = ByteOps.byteArraySingleXOR ba b
-        return! Freqs.moreLikely xor curr
-    }
-
-let s1q3bytes (ba:byte []) =
-    er {
-        let alphabetBytes = Constants.unicodeCharsAsBytes
-        let! mostLikely = alphabetBytes |> Array.fold (s1q3inner ba) (OK [||])
-        return mostLikely
-    }
-
-let s1q3 (hexString:string) :Error<string> =
-    er {
-        let! bytes = INString.hexStringToByteArray hexString
-        let! mostLikely = s1q3bytes bytes
-        let! outChars = mostLikely |> Array.map OUT.byteToChar |> MM.arrayOfErrorsToErrorArray
-        return String.Join("", outChars)
-    }
+let rec s1q3BytesInner (currentScore:float) (currentBytes:byte []) (inBytes:byte []) (alphabetBytes:byte []) =
+    match alphabetBytes with
+    | Nil -> currentBytes
+    | Cons(a,tail) ->
+        let xor = ByteOps.bytesXORSingle inBytes a
+        //Debug.WriteLine (xor|> OUT.bytesToChars |> String.Concat)
+        let newScore = (Freqs.stringScore xor)
+        //Debug.WriteLine newScore
+        //Debug.WriteLine ""
+        if newScore < currentScore then s1q3BytesInner (Freqs.stringScore xor) xor inBytes tail
+        else s1q3BytesInner currentScore currentBytes inBytes tail
+let s1q3Bytes (inBytes:byte []) = s1q3BytesInner 2.0 Array.empty inBytes (Constants.unicodeCharsAsBytes)
+let s1q3 (hexString:string) = s1q3Bytes (hexString |> Seq.toArray |> IN.hexesToBytes) |> OUT.bytesToChars |> String.Concat
 
 (*
 
@@ -116,22 +94,27 @@ Find it.
 
 *)
 
-let s1q4inner (current:Error<byte []>) (ba:byte []) :Error<byte []>=
-    er {
-        let! curr = current
-        let! mostLikely = s1q3bytes ba
-        let! out = (Freqs.moreLikely mostLikely curr)
-        return out
-    }
+//let s1q4inner (current:Error<byte []>) (ba:byte []) :Error<byte []>=
+//    er {
+//        let! curr = current
+//        let! mostLikely = s1q3bytes ba
+//        let! out = (Freqs.moreLikely mostLikely curr)
+//        return out
+//    }
 
-let s1q4() :Error<string> =
-    er {
-        let hexStrings = FileUtils.fileToStringArray ((__SOURCE_DIRECTORY__)+"/4.txt")
-        let! bytes = hexStrings |> Array.map INString.hexStringToByteArray |> MM.arrayOfErrorsToErrorArray
-        let! mostLikely = bytes |> Array.fold (s1q4inner) (OK [||])
-        let! out = mostLikely |> OUTString.byteArrayToCharString 
-        return out
-    }
+let rec s1q4inner (currentScore:float) (currentBytes:byte []) (lines:byte [] []) =
+    Debug.WriteLine (sprintf "%A" (currentBytes|>OUT.bytesToChars|>String.Concat))
+    Debug.WriteLine currentScore
+    match lines with
+    | Nil -> currentBytes
+    | Cons(a,tail) ->
+        if Freqs.stringScore (s1q3Bytes a) < currentScore then s1q4inner (Freqs.stringScore (s1q3Bytes a)) (s1q3Bytes a) tail
+        else s1q4inner currentScore currentBytes tail
+
+let s1q4() =
+    let hexStrings = System.IO.File.ReadAllLines ((__SOURCE_DIRECTORY__)+"/4.txt")
+    let lines = hexStrings |> Array.map (fun x -> x |> Seq.toArray |> IN.hexesToBytes)
+    s1q4inner 2.0 Array.empty lines |> OUT.bytesToChars |> String.Concat
 
 (*
 
@@ -155,14 +138,8 @@ Encrypt a bunch of stuff using your repeating-key XOR function. Encrypt your mai
 
 *)
 
-let s1q5 (inString:string) :Error<string> =
-    er {
-        let! bytes = inString |> INString.charStringToByteArray
-        let! keyBytes = "ICE" |> INString.charStringToByteArray
-        let outBytes = bytes |> ByteOps.keyXOR keyBytes
-        let! chars = outBytes |> OUTString.byteArrayToHexString
-        return chars
-    }
+let s1q5 (inString:string) =
+    ByteOps.keyXOR ("ICE" |> Seq.toArray |>IN.charsToBytes) (inString |> Seq.toArray |>IN.charsToBytes) |> OUT.bytesToHexes |> String.Concat
 
 (*
 
@@ -201,19 +178,19 @@ We get more tech support questions for this challenge than any of the other ones
 
 *)
 
-let s1q6inner() =
-    er {
-        
-        return()
-    }
-
-let s1q6() =
-    er {
-        let first216Chars = FileUtils.firstCharsOfFile 216 (new System.IO.StreamReader((__SOURCE_DIRECTORY__)+"/4.txt"))
-        let base64String = first216Chars |> String.Concat
-        let! bytes = base64String |> INString.base64StringToByteArray
-        let bytes160 = bytes.[0..159]
-        let editDistances = [|2..40|] |> Array.map (ByteOps.keyLengthToEditDistance bytes)
-        let keySize = editDistances |> Array.mapi (fun i x -> (i+2,x)) |> Array.minBy snd |> fst
-        return keySize
-    }
+//let s1q6inner() =
+//    er {
+//        
+//        return()
+//    }
+//
+//let s1q6() =
+//    er {
+//        let first216Chars = FileUtils.firstCharsOfFile 216 (new System.IO.StreamReader((__SOURCE_DIRECTORY__)+"/4.txt"))
+//        let base64String = first216Chars |> String.Concat
+//        let! bytes = base64String |> INString.base64StringToByteArray
+//        let bytes160 = bytes.[0..159]
+//        let editDistances = [|2..40|] |> Array.map (ByteOps.keyLengthToEditDistance bytes)
+//        let keySize = editDistances |> Array.mapi (fun i x -> (i+2,x)) |> Array.minBy snd |> fst
+//        return keySize
+//    }

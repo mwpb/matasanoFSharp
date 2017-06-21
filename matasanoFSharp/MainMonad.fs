@@ -4,10 +4,6 @@ open System
 open System.Diagnostics
 open FSharpx.Collections
 
-let (|Nil|Cons|) inSeq =
-    if Seq.isEmpty inSeq then Nil
-    else Cons (inSeq |> Seq.head, inSeq |> Seq.skip 1)
-
 type Error<'a> =
     | OK of 'a
     | Error of string
@@ -32,17 +28,6 @@ let printError (output:Error<'a>) =
     match output with
     | OK a -> Console.WriteLine (sprintf "%A" a)
     | Error s -> Console.WriteLine s
-
-let rec seqSwitch (seqOfErrors:Error<'a> LazyList) :Error<'a LazyList>= 
-    er {
-        match seqOfErrors with 
-        | x when Seq.isEmpty x -> return Seq.empty
-        | x ->
-            let head = Seq.take 1 x
-            let tail = arrayOfErrors.[1..]
-            let! recursion = arrayOfErrorsToErrorArray tail
-            return Array.concat [[|head|];recursion]
-    }
 
 let rec arrayOfErrorsToErrorArray (arrayOfErrors:Error<'a> []) :Error<'a []>= 
     er {

@@ -57,11 +57,10 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="MainMonad.fs" />
+    <Compile Include="ArrayUtils.fs" />
     <Compile Include="Constants.fs" />
     <Compile Include="Out.fs" />
     <Compile Include="In.fs" />
-    <Compile Include="OUTString.fs" />
     <Compile Include="FileUtils.fs" />
     <Compile Include="ByteOps.fs" />
     <Compile Include="Freqs.fs" />

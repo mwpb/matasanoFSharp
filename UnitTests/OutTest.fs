@@ -2,7 +2,7 @@
 
 open FsUnit
 open NUnit.Framework
-open MM
+open AU
 
 [<Test>]
 let testByteToHexPairSuccess() =
@@ -11,4 +11,4 @@ let testByteToHexPairSuccess() =
         0b1uy , '0', '1'
         0b10uy, '0', '2'
         0b11uy, '0', '3'
-    |] |> Array.iter (fun (b,x,y) -> OUT.byteToHexPair b |> should equal (OK (x,y)) )
+    |] |> Array.iter (fun (b,x,y) -> OUT.byteToHexPair b |> should equal (seq[x;y]) )

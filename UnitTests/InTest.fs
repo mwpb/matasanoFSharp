@@ -4,7 +4,7 @@ open System
 open System.Diagnostics
 open FsUnit
 open NUnit.Framework
-open MM
+open AU
 
 [<Test>]
 let testAsciiToByteSuccess() = 
@@ -104,7 +104,7 @@ let testAsciiToByteSuccess() =
         '|', 0b01111100uy
         '}', 0b01111101uy
         '~', 0b01111110uy
-    |] |> Array.iter (fun (c,b) -> (IN.charToByte c) |> should equal (OK b))
+    |] |> Array.iter (fun (c,b) -> (IN.charToByte c) |> should equal [|b|])
 //[<Test>]
 //let testAsciiToByteFailure() = 
 //    [|
@@ -131,12 +131,12 @@ let testHexPairToByteSuccess() =
         '0','d',0b1101uy
         '0','e',0b1110uy
         '0','f',0b1111uy
-    |] |> Array.iter (fun (x,y,z) -> (Debug.WriteLine (sprintf "(ch,ch,b) = (%c,%c,%d)" x y z));IN.hexPairToByte x y |> should equal (OK z))
-[<Test>]
-let testHexPairToByteFailure() = 
-    [|
-        'z','0',0b0000uy
-    |] |> Array.iter (fun (x,y,z) -> IN.hexPairToByte x y |> categorise |> should equal ErrorCaty)
+    |] |> Array.iter (fun (x,y,z) -> (Debug.WriteLine (sprintf "(ch,ch,b) = (%c,%c,%d)" x y z));IN.hexPairToByte x y |> should equal [|z|])
+//[<Test>]
+//let testHexPairToByteFailure() = 
+//    [|
+//        'z','0',0b0000uy
+//    |] |> Array.iter (fun (x,y,z) -> IN.hexPairToByte x y |> should throw typeof<System.Exception>)
  //    Console.WriteLine "base64QuadrupleToByteTriple"
 //    [|
 //        ('f','2','a','0')
