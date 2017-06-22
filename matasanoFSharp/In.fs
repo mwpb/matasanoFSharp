@@ -10,8 +10,8 @@ let hexPairToByte (c1:char) (c2:char) =
     [|System.Convert.ToByte(string(c1)+string(c2),16)|]
 
 let base64QuadrupleToBytes (c1:char) (c2:char) (c3:char) (c4:char) =
-    let byteArray = System.Convert.FromBase64CharArray([|c1;c2;c3;c4|],0,4)
-    [|byteArray.[0];byteArray.[1];byteArray.[2]|]
+    System.Convert.FromBase64CharArray([|c1;c2;c3;c4|],0,4)
+    //[|byteArray.[0];byteArray.[1];byteArray.[2]|]
 
 let rec hexesToBytesInner (acc:byte []) (hexes:char []) =
     match hexes with
@@ -26,8 +26,8 @@ let rec base64sToBytesInner (acc: byte []) (base64s:char []) =
     | Cons(a,Nil) -> failwith "Base64 array must have length that is a multiple of four."
     | Cons(a,Cons(b,Nil)) -> failwith "Base64 array must have length that is a multiple of four."
     | Cons(a,Cons(b,Cons(c,Nil))) -> failwith "Base64 array must have length that is a multiple of four."
-    | Cons(a,Cons(b,Cons(c,Cons(d,tail)))) -> base64sToBytesInner (Array.concat [acc;base64QuadrupleToBytes a b c d]) tail
-let base64sToBytes (base64s:char []) = hexesToBytesInner Array.empty base64s
+    | Cons(a,Cons(b,Cons(c,Cons(d,tail)))) -> base64sToBytesInner (Array.append acc (base64QuadrupleToBytes a b c d)) tail
+let base64sToBytes (base64s:char []) = base64sToBytesInner Array.empty base64s
 
 let rec charsToBytesInner (acc:byte []) (chars:char []) =
     match chars with

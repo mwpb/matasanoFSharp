@@ -33,8 +33,8 @@ let transpose (keyLength:int) (bytes:byte []) = transposeInner [|for i in [0..ke
 //    [|for j in 0..(n-1) do yield [|for i in [|j..n..m|] do yield bytes.[i]|]|]
 
 let rec revtransposeInner (acc:byte []) (keyLength:int) (currentKeyIndex:int) (transpose: byte [] []) =
-    Debug.WriteLine (sprintf "%A" transpose)
-    Debug.WriteLine (sprintf "%A" transpose)
+//    Debug.WriteLine (sprintf "%A" transpose)
+//    Debug.WriteLine (sprintf "%A" transpose)
     match transpose.[currentKeyIndex] with
     | Nil -> acc
     | Cons(a,tail) -> 
@@ -84,11 +84,25 @@ let rec bytesEditDistanceInner (acc:int) (bytes1:byte []) (bytes2:byte []) =
     | Cons(a,taila), Cons(b,tailb) -> bytesEditDistanceInner ((byteEditDistance a b)+acc) taila tailb
 let bytesEditDistance bytes1 bytes2 = bytesEditDistanceInner 0 bytes1 bytes2
 
-let keyLengthToEditDistance (input:byte []) (keyLength:int) :float=
-    let one = input.[0..(keyLength-1)]
-    let two = input.[keyLength..2*keyLength-1]
-    let three = input.[2*keyLength..3*keyLength-1]
-    let four = input.[3*keyLength..4*keyLength-1]
-    let dist1 = byteArrayEditDistance one two |> float
-    let dist2 = byteArrayEditDistance three four |> float
-    (dist1 + dist2)/(2.0*(keyLength |> float))
+let rec keyLengthToEditDistanceInner (acc:int) (keyLength:int) (input:byte []) :int=
+    if input.Length >= keyLength*2 then
+        let one = input.[0..(keyLength-1)]
+        let two = input.[keyLength..2*keyLength-1]
+        let ed = bytesEditDistance one two
+        keyLengthToEditDistanceInner (acc+ed) keyLength (input.[2*keyLength..])
+    else acc
+let keyLengthToEditDistance keyLength bytes  = ((keyLengthToEditDistanceInner 0 keyLength bytes)|>float)/(1.0|> float)
+
+let rec orderKeySizesInner (acc:int []) (currentEDs:float []) (keySizes:int []) (bytes: byte []) =
+    //Debug.WriteLine (sprintf "acc = %A" acc)
+    //Debug.WriteLine (sprintf "currentEDs = %A" currentEDs)
+    match keySizes with
+    | Nil -> acc
+    | Cons(a,tail) ->
+        let newED = keyLengthToEditDistance a bytes
+        let index = currentEDs |> Array.tryFindIndex (fun x -> newED < x) 
+        match index with
+        | Some n -> orderKeySizesInner (Array.concat [acc.[0..n-1];[|a|];acc.[n..acc.Length-2]]) (Array.concat [currentEDs.[0..n-1];[|newED|];currentEDs.[n..currentEDs.Length-2]]) tail bytes
+        | None -> orderKeySizesInner acc currentEDs tail bytes
+        
+let orderKeySizes (margin:int) keySizes bytes = orderKeySizesInner [|for i in 0..margin-1 do yield 0|] [|for i in 0..margin-1 do yield infinity|] keySizes bytes

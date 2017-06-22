@@ -131,7 +131,7 @@ let testHexPairToByteSuccess() =
         '0','d',0b1101uy
         '0','e',0b1110uy
         '0','f',0b1111uy
-    |] |> Array.iter (fun (x,y,z) -> (Debug.WriteLine (sprintf "(ch,ch,b) = (%c,%c,%d)" x y z));IN.hexPairToByte x y |> should equal [|z|])
+    |] |> Array.iter (fun (x,y,z) -> IN.hexPairToByte x y |> should equal [|z|])
 //[<Test>]
 //let testHexPairToByteFailure() = 
 //    [|

@@ -73,10 +73,7 @@ let rec s1q3BytesInner (currentScore:float) (currentBytes:byte []) (inBytes:byte
     | Nil -> currentBytes
     | Cons(a,tail) ->
         let xor = ByteOps.bytesXORSingle inBytes a
-        //Debug.WriteLine (xor|> OUT.bytesToChars |> String.Concat)
         let newScore = (Freqs.stringScore xor)
-        //Debug.WriteLine newScore
-        //Debug.WriteLine ""
         if newScore < currentScore then s1q3BytesInner (Freqs.stringScore xor) xor inBytes tail
         else s1q3BytesInner currentScore currentBytes inBytes tail
 let s1q3Bytes (inBytes:byte []) = s1q3BytesInner 2.0 Array.empty inBytes (Constants.unicodeCharsAsBytes)
@@ -103,8 +100,8 @@ Find it.
 //    }
 
 let rec s1q4inner (currentScore:float) (currentBytes:byte []) (lines:byte [] []) =
-    Debug.WriteLine (sprintf "%A" (currentBytes|>OUT.bytesToChars|>String.Concat))
-    Debug.WriteLine currentScore
+//    Debug.WriteLine (sprintf "%A" (currentBytes|>OUT.bytesToChars|>String.Concat))
+//    Debug.WriteLine currentScore
     match lines with
     | Nil -> currentBytes
     | Cons(a,tail) ->
@@ -114,7 +111,7 @@ let rec s1q4inner (currentScore:float) (currentBytes:byte []) (lines:byte [] [])
 let s1q4() =
     let hexStrings = System.IO.File.ReadAllLines ((__SOURCE_DIRECTORY__)+"/4.txt")
     let lines = hexStrings |> Array.map (fun x -> x |> Seq.toArray |> IN.hexesToBytes)
-    s1q4inner 2.0 Array.empty lines |> OUT.bytesToChars |> String.Concat
+    s1q4inner infinity Array.empty lines |> OUT.bytesToChars |> String.Concat
 
 (*
 
@@ -179,3 +176,14 @@ We get more tech support questions for this challenge than any of the other ones
 *)
 
 let s1q6part1 (input1:string) (input2:string) = ByteOps.bytesEditDistance (input1|>Seq.toArray|>IN.charsToBytes) (input2|>Seq.toArray|>IN.charsToBytes)
+    
+let s1q6() = 
+    let base64s = System.IO.File.ReadLines ((__SOURCE_DIRECTORY__)+"/6.txt") |> String.Concat
+    let bytes = base64s |> Seq.toArray |> IN.base64sToBytes
+    let ns = ByteOps.orderKeySizes 3 [|2..40|] bytes
+    let ts = ns |> Array.map (fun n -> ByteOps.transpose n bytes)
+    let sols = ts |> Array.map (fun t -> t |> Array.map s1q3Bytes)
+    let outs = (sols,ns) ||> Array.map2 (fun sol n -> sol |> ByteOps.revtranspose n)
+    let out = outs |> Array.map Freqs.stringScore
+    let index = out |> Array.mapi (fun i x -> (i,x)) |> Array.minBy(fun (i,x) -> x) |> fst
+    outs.[index] |> OUT.bytesToChars |> String.Concat
