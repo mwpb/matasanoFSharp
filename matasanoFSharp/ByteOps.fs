@@ -93,6 +93,14 @@ let rec keyLengthToEditDistanceInner (acc:int) (keyLength:int) (input:byte []) :
     else acc
 let keyLengthToEditDistance keyLength bytes  = ((keyLengthToEditDistanceInner 0 keyLength bytes)|>float)/(1.0|> float)
 
+let rec starHammingInner (keyLength:int) (acc:int) (inner:byte []) (outer:byte []) =
+    match inner, outer with
+    | Nil, Nil -> acc
+    | Nil, Cons(a,tail) -> starHammingInner keyLength acc (outer.[keyLength..]) (outer.[keyLength..])
+    | Cons(a,tail), Nil -> failwith "Outer should never be smaller than inner."
+    | Cons(a,taila), Cons(b,tailb) -> starHammingInner keyLength (acc+bytesEditDistance inner.[0..keyLength-1] outer.[0..keyLength-1]) inner.[keyLength..] outer
+let starHamming keyLength bytes = starHammingInner keyLength 0 bytes bytes
+
 let rec orderKeySizesInner (acc:int []) (currentEDs:float []) (keySizes:int []) (bytes: byte []) =
     //Debug.WriteLine (sprintf "acc = %A" acc)
     //Debug.WriteLine (sprintf "currentEDs = %A" currentEDs)

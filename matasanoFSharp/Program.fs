@@ -12,7 +12,7 @@ open One
 let main argv = 
 //    StringAnalysis.testSingleXOR
 //    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
-    let out =  QS.s1q7("YELLOW SUBMARINE")
+    let out =  QS.s1q8()
 //    for x in out do Console.Write (sprintf "%A" x)
     //MM.printError (out)
     Console.WriteLine out

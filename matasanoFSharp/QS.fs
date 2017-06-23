@@ -193,3 +193,9 @@ let s1q7 (key:string) =
     let keyBytes = key |> Seq.toArray |> IN.charsToBytes
     let bytes = base64s |> Seq.toArray |> IN.base64sToBytes
     AES.aesBytes keyBytes bytes |> OUT.bytesToChars |> String.Concat
+
+let s1q8() =
+    let base64s = System.IO.File.ReadLines ((__SOURCE_DIRECTORY__)+"/8.txt") |> Seq.toArray
+    let bytes = base64s |> Array.map (Seq.toArray >> IN.base64sToBytes)
+    let editDistance = bytes |> Array.map (ByteOps.starHamming 16)
+    editDistance |> Array.mapi (fun i x -> (i,x)) |> Array.maxBy snd |> fst
