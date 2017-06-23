@@ -12,10 +12,9 @@ open One
 let main argv = 
 //    StringAnalysis.testSingleXOR
 //    Debug.WriteLine (sprintf "%A" IN.testAsciiToByteFailure)
-    let out =  QS.s1q6()
+    let out =  QS.s1q7("YELLOW SUBMARINE")
 //    for x in out do Console.Write (sprintf "%A" x)
     //MM.printError (out)
-    let out2 = out.Replace("\n","$")
-    Debug.WriteLine out2
+    Console.WriteLine out
     Console.ReadLine() |> ignore
     0 // return an integer exit code 

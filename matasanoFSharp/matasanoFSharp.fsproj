@@ -63,6 +63,7 @@
     <Compile Include="In.fs" />
     <Compile Include="FileUtils.fs" />
     <Compile Include="ByteOps.fs" />
+    <Compile Include="AES.fs" />
     <Compile Include="Freqs.fs" />
     <Compile Include="One.fs" />
     <Compile Include="QS.fs" />
@@ -71,6 +72,8 @@
     <Content Include="packages.config" />
     <Content Include="4.txt" />
     <Content Include="6.txt" />
+    <Content Include="7.txt" />
+    <Content Include="8.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

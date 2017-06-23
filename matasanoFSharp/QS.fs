@@ -187,3 +187,9 @@ let s1q6() =
     let out = outs |> Array.map Freqs.stringScore
     let index = out |> Array.mapi (fun i x -> (i,x)) |> Array.minBy(fun (i,x) -> x) |> fst
     outs.[index] |> OUT.bytesToChars |> String.Concat
+
+let s1q7 (key:string) =
+    let base64s = System.IO.File.ReadLines ((__SOURCE_DIRECTORY__)+"/7.txt") |> String.Concat
+    let keyBytes = key |> Seq.toArray |> IN.charsToBytes
+    let bytes = base64s |> Seq.toArray |> IN.base64sToBytes
+    AES.aesBytes keyBytes bytes |> OUT.bytesToChars |> String.Concat
